@@ -1,9 +1,11 @@
 #Interactuar con la base de datos
 import os
+import auxiliares
+import database as db
 
 def iniciar():
     while True:
-        os.system('cls')
+        auxiliares.limpiarPantalla()
 
         print("================================")
         print("Bienvenid@ al Gestor de clientes")
@@ -17,23 +19,46 @@ def iniciar():
         print("================================")
         op = int(input("Elige un número: "))
 
-        os.system('cls')
+        auxiliares.limpiarPantalla()
 
         if op == 1:
             print("Listando clientes...\n")
-            #
-        elif op == 2:
-            print("Agregando...\n")            
-            #
-        elif op == 3:
+            for cliente in db.Clientes.lista:
+                print(cliente)
+            
+        elif op == 2:                    
+            dni = auxiliares.leerTexto(3,3,"DNI (2 int y 1 char):").upper()
+            nombre = auxiliares.leerTexto(2,30,"Nombre:").capitalize()
+            apellido = auxiliares.leerTexto(2,30,"Apellido:").capitalize()
+            print("Agregando...\n")    
+            db.Clientes.crear(dni,nombre, apellido)
+            print("Cliente añadido correctamente...\n")  
+
+        elif op == 3:            
+            dni = auxiliares.leerTexto(3,3,"DNI (2 int y 1 char):").upper()
             print("Buscando...\n")
-            #
+            cliente = db.Clientes.buscar(dni)
+            print(cliente) if cliente else print("No se encontró el cliente.")
+
         elif op == 4:
-            print("Modificando...\n")
-            #
+            dni = auxiliares.leerTexto(3,3,"DNI (2 int y 1 char):").upper()
+            cliente = db.Clientes.buscar(dni)
+            if cliente:            
+                print("Se encontro al cliente:\n")
+                print(cliente)
+                nombre = auxiliares.leerTexto(2,30,"Nombre:").capitalize()
+                apellido = auxiliares.leerTexto(2,30,"Apellido:").capitalize()
+                print("Modificando...\n")    
+                db.Clientes.modificar(dni, nombre, apellido)
+                print("Cliente modificado correctamente...\n")  
+            else:
+                print("No se encontró ningun cliente con ese DNI")
+        
         elif op == 5:
-            print("Borrando...\n")
-            #
+            dni = auxiliares.leerTexto(3,3,"DNI (2 int y 1 char):").upper()
+            print("Buscando...\n")            
+            print("Cliente borrado correctamente") if db.Clientes.borrar(dni) else print("No se encontró el cliente.")                        
+        
         elif op == 6:
             print("Saliendo...\n")
             break
