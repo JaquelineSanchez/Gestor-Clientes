@@ -1,4 +1,6 @@
+import csv
 import auxiliares
+import config
 import copy
 import unittest
 import database as db
@@ -41,5 +43,19 @@ class TestDatabase(unittest.TestCase):
         self.assertTrue(auxiliares.validarDni('00A',db.Clientes.lista))
         self.assertFalse(auxiliares.validarDni('A00',db.Clientes.lista))
         self.assertFalse(auxiliares.validarDni('19J',db.Clientes.lista))
+
+    def test_escrituraCsv(self):
+        db.Clientes.borrar('19J')
+        db.Clientes.borrar('45S')
+        db.Clientes.modificar('25A','Mariana','Luna')
+
+        dni, nombre, apellido = None, None, None
+        with open(config.DATABASE_PATH, newline='\n') as archivo:
+            reader = csv.reader(archivo, delimiter=';')
+            dni, nombre, apellido = next(reader)
+
+        self.assertEqual(dni,'25A')
+        self.assertEqual(nombre,'Mariana')
+        self.assertEqual(apellido,'Luna')        
 
 #cmd: pytest -v
