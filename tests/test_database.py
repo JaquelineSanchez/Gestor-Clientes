@@ -1,3 +1,4 @@
+import auxiliares
 import copy
 import unittest
 import database as db
@@ -35,5 +36,10 @@ class TestDatabase(unittest.TestCase):
         clienteInex = db.Clientes.buscar('45S')
         self.assertEqual(clienteBorrado.dni,'45S')
         self.assertIsNone(clienteInex)
+
+    def test_validarDni(self):
+        self.assertTrue(auxiliares.validarDni('00A',db.Clientes.lista))
+        self.assertFalse(auxiliares.validarDni('A00',db.Clientes.lista))
+        self.assertFalse(auxiliares.validarDni('19J',db.Clientes.lista))
 
 #cmd: pytest -v

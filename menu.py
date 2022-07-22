@@ -26,11 +26,16 @@ def iniciar():
             for cliente in db.Clientes.lista:
                 print(cliente)
             
-        elif op == 2:                    
-            dni = auxiliares.leerTexto(3,3,"DNI (2 int y 1 char):").upper()
+        elif op == 2:                                
+            dni = None
+            while True:
+                dni = auxiliares.leerTexto(3,3,"DNI (2 int y 1 char):").upper()
+                if auxiliares.validarDni(dni,db.Clientes.lista):
+                    break                
+           
             nombre = auxiliares.leerTexto(2,30,"Nombre:").capitalize()
             apellido = auxiliares.leerTexto(2,30,"Apellido:").capitalize()
-            print("Agregando...\n")    
+            print("Agregando...")    
             db.Clientes.crear(dni,nombre, apellido)
             print("Cliente añadido correctamente...\n")  
 
@@ -44,8 +49,9 @@ def iniciar():
             dni = auxiliares.leerTexto(3,3,"DNI (2 int y 1 char):").upper()
             cliente = db.Clientes.buscar(dni)
             if cliente:            
-                print("Se encontro al cliente:\n")
+                print("Se encontro al cliente:")
                 print(cliente)
+                print("\nIngresa los datos modificados:")
                 nombre = auxiliares.leerTexto(2,30,"Nombre:").capitalize()
                 apellido = auxiliares.leerTexto(2,30,"Apellido:").capitalize()
                 print("Modificando...\n")    
