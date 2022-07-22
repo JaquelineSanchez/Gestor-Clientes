@@ -70,7 +70,7 @@ def iniciar():
             break
         else:
             print("Esa opción no existe")
-        input("Presiona ENTER para continuar")
+        input("\nPresiona ENTER para continuar")
 
 
 
