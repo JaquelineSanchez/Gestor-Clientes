@@ -2,6 +2,7 @@
 import database as db
 from tkinter import *
 from tkinter import ttk
+from tkinter.messagebox import askokcancel, WARNING
 
 class CenterMixin:
 
@@ -61,11 +62,25 @@ class Main(Tk, CenterMixin):
 
         Button(frame,text="Crear",command=None).grid(row=0,column=0)
         Button(frame,text="Modificar",command=None).grid(row=0,column=1)
-        Button(frame,text="Borrar",command=None).grid(row=0,column=2)
+        Button(frame,text="Borrar",command=self.borrar).grid(row=0,column=2)
 
         #atributo de instancia
         self.treeview = treeview
     
+    def borrar(self):
+        cliente = self.treeview.focus()
+        if cliente:
+            #lista con sus valores
+            campos = self.treeview.item(cliente,'values')
+            confirmar = askokcancel(
+                title="Confirmar borrado",
+                message=f"¿Borrar a {campos[1]} {campos[2]}?",
+                icon=WARNING)
+            if confirmar:
+                self.treeview.delete(cliente)
+
+
+
 if __name__ == "__main__":
     app = Main()
     app.mainloop()
