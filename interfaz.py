@@ -18,6 +18,51 @@ class CenterMixin:
         #WIDTH x HEIGHT + OFFSET_X + OFFSET_Y
         self.geometry(f"{w}x{h}+{x}+{y}")
 
+#Creacion de subventana
+class CreateClientWindow(Toplevel, CenterMixin):
+
+    def __init__(self, parent):
+        #indicar quien es padre de la subventana
+        super().__init__(parent)
+        self.title("Crear un cliente")
+        self.build()
+        self.center()
+        #Obligan a realizar una accion en la subventana antes de regresar a la otra
+        self.transient(parent)
+        self.grab_set()
+
+    def build(self):
+        frame = Frame(self)
+        frame.pack(padx=20,pady=10)
+
+        Label(frame,text="DNI (2 int y 1 char):").grid(row=0,column=0)
+        Label(frame,text="Nombre (2 - 30 chars):").grid(row=1,column=0)
+        Label(frame,text="Apellido (2 - 30 chars):").grid(row=2,column=0)
+
+        dni = Entry(frame)
+        dni.grid(row=0,column=1)
+        nombre = Entry(frame)
+        nombre.grid(row=1,column=1)
+        apellido = Entry(frame)
+        apellido.grid(row=2,column=1)
+
+        frame = Frame(self)
+        frame.pack(pady=10)
+
+        crear = Button(frame, text="Crear", command=self.crearCliente)
+        crear.configure(state=DISABLED)
+        crear.grid(row=0,column=0)
+        Button(frame, text="Cancelar", command=self.cerrar).grid(row=0,column=1)        
+
+    def crearCliente(self):
+        pass
+
+    def cerrar(self):
+        self.destroy()
+        self.update()
+
+
+
 
 class Main(Tk, CenterMixin):
     
@@ -60,7 +105,7 @@ class Main(Tk, CenterMixin):
         frame = Frame(self)
         frame.pack(pady=20)
 
-        Button(frame,text="Crear",command=None).grid(row=0,column=0)
+        Button(frame,text="Crear",command=self.crear).grid(row=0,column=0)
         Button(frame,text="Modificar",command=None).grid(row=0,column=1)
         Button(frame,text="Borrar",command=self.borrar).grid(row=0,column=2)
 
@@ -79,7 +124,8 @@ class Main(Tk, CenterMixin):
             if confirmar:
                 self.treeview.delete(cliente)
 
-
+    def crear(self):
+        CreateClientWindow(self)
 
 if __name__ == "__main__":
     app = Main()
