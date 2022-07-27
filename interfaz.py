@@ -1,5 +1,6 @@
 """ Menú gráfico"""
 import database as db
+import auxiliares
 from tkinter import *
 from tkinter import ttk
 from tkinter.messagebox import askokcancel, WARNING
@@ -41,10 +42,14 @@ class CreateClientWindow(Toplevel, CenterMixin):
 
         dni = Entry(frame)
         dni.grid(row=0,column=1)
+        #Configurar evento para validar datos
+        dni.bind("<KeyRelease>", lambda event: self.validar(event, 0))
         nombre = Entry(frame)
         nombre.grid(row=1,column=1)
-        apellido = Entry(frame)
+        nombre.bind("<KeyRelease>", lambda event: self.validar(event, 1))
+        apellido = Entry(frame)    
         apellido.grid(row=2,column=1)
+        apellido.bind("<KeyRelease>", lambda event: self.validar(event, 2))
 
         frame = Frame(self)
         frame.pack(pady=10)
@@ -57,11 +62,16 @@ class CreateClientWindow(Toplevel, CenterMixin):
     def crearCliente(self):
         pass
 
+    def validar(self, event, index):
+        valor = event.widget.get()
+        valido = auxiliares.validarDni(valor, db.Clientes.lista) if index == 0 \
+            else valor.isalpha() and (2 <= len(valor) <= 30)
+        event.widget.configure({"bg":"Green" if valido else "Red"})
+        
+
     def cerrar(self):
         self.destroy()
         self.update()
-
-
 
 
 class Main(Tk, CenterMixin):
