@@ -57,16 +57,30 @@ class CreateClientWindow(Toplevel, CenterMixin):
         crear = Button(frame, text="Crear", command=self.crearCliente)
         crear.configure(state=DISABLED)
         crear.grid(row=0,column=0)
+        self.crear = crear
         Button(frame, text="Cancelar", command=self.cerrar).grid(row=0,column=1)        
 
+        self.validaciones = [0, 0, 0]
+        self.dni = dni
+        self.nombre = nombre
+        self.apellido = apellido
+    
     def crearCliente(self):
-        pass
+        #master = ventana principal
+        self.master.treeview.insert(
+            parent='', index ='end', iid=self.dni.get(),
+            values=(self.dni.get(), self.nombre.get(), self.apellido.get()))
+        self.cerrar()
 
     def validar(self, event, index):
         valor = event.widget.get()
         valido = auxiliares.validarDni(valor, db.Clientes.lista) if index == 0 \
             else valor.isalpha() and (2 <= len(valor) <= 30)
         event.widget.configure({"bg":"Green" if valido else "Red"})
+        #Cambiar estado del boton
+        self.validaciones[index] = valido
+        self.crear.config(state=NORMAL if self.validaciones == [1, 1, 1] else DISABLED)
+
         
 
     def cerrar(self):
