@@ -87,6 +87,78 @@ class CreateClientWindow(Toplevel, CenterMixin):
         self.destroy()
         self.update()
 
+class EditClientWindow(Toplevel, CenterMixin):
+
+    def __init__(self, parent):
+        #indicar quien es padre de la subventana
+        super().__init__(parent)
+        self.title("Actualizar cliente")
+        self.build()
+        self.center()
+        #Obligan a realizar una accion en la subventana antes de regresar a la otra
+        self.transient(parent)
+        self.grab_set()
+
+    def build(self):
+        frame = Frame(self)
+        frame.pack(padx=20,pady=10)
+
+        Label(frame,text="DNI (no editable):").grid(row=0,column=0)
+        Label(frame,text="Nombre (2 - 30 chars):").grid(row=1,column=0)
+        Label(frame,text="Apellido (2 - 30 chars):").grid(row=2,column=0)
+        
+        #Crear campos
+        dni = Entry(frame)
+        dni.grid(row=0,column=1)        
+        
+        nombre = Entry(frame)
+        nombre.grid(row=1,column=1)
+        #Configurar evento para validar datos
+        nombre.bind("<KeyRelease>", lambda event: self.validar(event, 0))
+        apellido = Entry(frame)    
+        apellido.grid(row=2,column=1)
+        apellido.bind("<KeyRelease>", lambda event: self.validar(event, 1))
+        
+        #Recuperar informacion seleccionada
+        cliente = self.master.treeview.focus()
+        campos = self.master.treeview.item(cliente, 'values')
+        dni.insert(0,campos[0])
+        dni.config(state=DISABLED)
+        nombre.insert(0,campos[1])
+        apellido.insert(0,campos[2])
+        
+        #Crear botones
+        frame = Frame(self)
+        frame.pack(pady=10)
+
+        actualizar = Button(frame, text="Actualizar", command=self.editarCliente)        
+        actualizar.grid(row=0,column=0)
+        self.actualizar = actualizar
+        Button(frame, text="Cancelar", command=self.cerrar).grid(row=0,column=1)        
+
+        self.validaciones = [1, 1]
+        self.dni = dni
+        self.nombre = nombre
+        self.apellido = apellido
+    
+    def editarCliente(self):
+        #master = ventana principal
+        cliente = self.master.treeview.focus()
+        self.master.treeview.item(cliente, values=(self.dni.get(), self.nombre.get(), self.apellido.get()))                        
+        self.cerrar()
+
+    def validar(self, event, index):
+        valor = event.widget.get()
+        valido = valor.isalpha() and (2 <= len(valor) <= 30)
+        event.widget.configure({"bg":"Green" if valido else "Red"})
+        #Cambiar estado del boton
+        self.validaciones[index] = valido
+        self.actualizar.config(state=NORMAL if self.validaciones == [1, 1] else DISABLED)        
+
+    def cerrar(self):
+        self.destroy()
+        self.update()    
+
 
 class Main(Tk, CenterMixin):
     
@@ -130,7 +202,7 @@ class Main(Tk, CenterMixin):
         frame.pack(pady=20)
 
         Button(frame,text="Crear",command=self.crear).grid(row=0,column=0)
-        Button(frame,text="Modificar",command=None).grid(row=0,column=1)
+        Button(frame,text="Modificar",command=self.editar).grid(row=0,column=1)
         Button(frame,text="Borrar",command=self.borrar).grid(row=0,column=2)
 
         #atributo de instancia
@@ -150,6 +222,10 @@ class Main(Tk, CenterMixin):
 
     def crear(self):
         CreateClientWindow(self)
+
+    def editar(self):
+        if self.treeview.focus():            
+            EditClientWindow(self)
 
 if __name__ == "__main__":
     app = Main()
